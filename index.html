@@ -5,96 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Deutsch Tile</title>
     <style>
-        /* Transparent background so it floats on your desktop */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: transparent; 
+            background-color: transparent;
             margin: 0;
             height: 100vh;
-            overflow: hidden; /* Prevents scrollbars when dragging */
-            user-select: none; /* Prevents highlighting text while dragging */
+            overflow: hidden;
+            user-select: none;
         }
 
         .card {
             position: absolute;
-            top: 20px;       /* Default: Top of screen */
-            left: 20px;      /* Default: Left of screen */
-            background: rgba(255, 255, 255, 0.95); /* Slight transparency */
-            backdrop-filter: blur(10px); /* Frosted glass effect (Windows 11 style) */
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-            padding: 30px;
-            width: 550px;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            padding: 20px;
+            width: 320px; /* Much smaller! */
             text-align: center;
-            border-top: 6px solid #0078d4;
-            cursor: grab; /* Shows the "hand" cursor */
-            transition: box-shadow 0.2s, transform 0.1s;
+            border-top: 4px solid #0078d4;
+            cursor: grab;
         }
 
         .card:active {
             cursor: grabbing;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.25);
         }
 
-        /* The little grip handle at the top to show it's moveable */
         .drag-handle {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 15px;
-            color: #aaa;
-            font-size: 1.2em;
-            letter-spacing: 2px;
-        }
-
-        .source {
-            font-size: 0.8em;
-            color: #888;
+            text-align: center;
+            color: #ccc;
+            font-size: 1em;
             margin-bottom: 10px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .word {
-            font-size: 2.2em;
+            font-size: 1.6em;
             font-weight: bold;
             color: #1a1a1a;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .meaning {
-            font-size: 1.1em;
-            color: #555;
-            margin-bottom: 25px;
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 15px;
             font-style: italic;
         }
 
-        .examples {
-            text-align: left;
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border-left: 4px solid #0078d4;
-        }
-
         .example {
-            margin-bottom: 12px;
-            font-size: 1em;
+            text-align: left;
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.85em;
             color: #333;
-            line-height: 1.5;
+            line-height: 1.4;
+            border-left: 3px solid #0078d4;
         }
-
-        .example:last-child { margin-bottom: 0; }
 
         .highlight {
             color: #0078d4;
             font-weight: bold;
         }
 
-        /* Smooth fade effect for auto-changing */
         .source, .word, .meaning, .example {
-            transition: opacity 0.5s ease-in-out;
+            transition: opacity 0.4s ease-in-out;
         }
         .fade-out {
             opacity: 0;
@@ -104,21 +81,16 @@
 <body>
 
     <div class="card" id="draggable-card">
-        <div class="drag-handle">⋮⋮</div> <!-- Grip handle -->
-        <div class="source" id="source"></div>
+        <div class="drag-handle">⋮⋮</div>
         <div class="word" id="word"></div>
         <div class="meaning" id="meaning"></div>
-        <div class="examples">
-            <div class="example" id="ex1"></div>
-            <div class="example" id="ex2"></div
-        </div>
+        <div class="example" id="ex1"></div>
     </div>
 
-    <!-- Links to your external data file -->
     <script src="vocab.js"></script>
     
     <script>
-        // --- 1. DRAGGABLE WIDGET LOGIC ---
+        // Drag logic
         const card = document.getElementById('draggable-card');
         let isDragging = false;
         let startX, startY, initialLeft, initialTop;
@@ -144,29 +116,23 @@
             isDragging = false;
         });
 
-        // --- 2. VOCAB LOGIC ---
+        // Vocab logic - simplified
         function showRandomWord() {
-            const elements = document.querySelectorAll('.source, .word, .meaning, .example');
-            
-            // Fade out
+            const elements = document.querySelectorAll('.word, .meaning, .example');
             elements.forEach(el => el.classList.add('fade-out'));
 
             setTimeout(() => {
                 const randomIndex = Math.floor(Math.random() * vocab.length);
                 const item = vocab[randomIndex];
 
-                document.getElementById('source').textContent = "📖 " + item.source;
                 document.getElementById('word').textContent = item.word;
                 document.getElementById('meaning').textContent = item.meaning;
                 document.getElementById('ex1').innerHTML = "💬 " + item.ex1;
-                document.getElementById('ex2').innerHTML = "💬 " + item.ex2;
 
-                // Fade in
                 elements.forEach(el => el.classList.remove('fade-out'));
-            }, 500); 
+            }, 400);
         }
 
-        // Start immediately and set 2-minute interval
         showRandomWord();
         setInterval(showRandomWord, 120000);
     </script>
