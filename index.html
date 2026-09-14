@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office German Vocab Tile</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            padding: 40px;
+            max-width: 550px;
+            width: 90%;
+            text-align: center;
+            border-top: 6px solid #0078d4; /* Windows 11 Blue */
+        }
+        .source {
+            font-size: 0.85em;
+            color: #888;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        .word {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+        .meaning {
+            font-size: 1.15em;
+            color: #555;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        .examples {
+            text-align: left;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #0078d4;
+        }
+        .example {
+            margin-bottom: 15px;
+            font-size: 1.05em;
+            color: #333;
+            line-height: 1.5;
+        }
+        .example:last-child { margin-bottom: 0; }
+        .highlight {
+            color: #0078d4;
+            font-weight: bold;
+        }
+        button {
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            padding: 14px 36px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            font-weight: 600;
+        }
+        button:hover { background-color: #005a9e; }
+        button:active { transform: scale(0.98); }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="source" id="source"></div>
+        <div class="word" id="word"></div>
+        <div class="meaning" id="meaning"></div>
+        <div class="examples">
+            <div class="example" id="ex1"></div>
+            <div class="example" id="ex2"></div>
+        </div>
+        <button onclick="showRandomWord()">Nächstes Wort ➔</button>
+    </div>
+
+    <!-- This links to your external data file -->
+    <script src="vocab.js"></script>
+    
+    <script>
+        function showRandomWord() {
+            const randomIndex = Math.floor(Math.random() * vocab.length);
+            const item = vocab[randomIndex];
+            
+            document.getElementById('source').textContent = "📖 " + item.source;
+            document.getElementById('word').textContent = item.word;
+            document.getElementById('meaning').textContent = item.meaning;
+            document.getElementById('ex1').innerHTML = "💬 " + item.ex1;
+            document.getElementById('ex2').innerHTML = "💬 " + item.ex2;
+        }
+
+        // Show a word immediately when the file is opened
+        showRandomWord();
+    </script>
+</body>
+</html>
