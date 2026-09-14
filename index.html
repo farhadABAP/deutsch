@@ -58,7 +58,7 @@
         }
 
         .word, .topic, .headline {
-            font-size: 1.4em;
+            font-size: 1.3em;
             font-weight: bold;
             color: #1a1a1a;
             margin-bottom: 8px;
@@ -66,21 +66,21 @@
         }
 
         .meaning, .pattern {
-            font-size: 0.85em;
+            font-size: 0.8em;
             color: #666;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             font-style: italic;
         }
 
         .example {
             text-align: left;
             background: #f8f9fa;
-            padding: 10px;
+            padding: 8px;
             border-radius: 8px;
-            font-size: 0.82em;
+            font-size: 0.78em;
             color: #333;
             line-height: 1.4;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .vocab-card .example { border-left: 3px solid #0078d4; }
@@ -91,16 +91,16 @@
             background: #fff3cd;
             padding: 8px;
             border-radius: 6px;
-            font-size: 0.75em;
+            font-size: 0.72em;
             color: #856404;
             margin-top: auto;
             text-align: left;
         }
 
         .date {
-            font-size: 0.75em;
+            font-size: 0.72em;
             color: #999;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .vocab-card .highlight { color: #0078d4; font-weight: bold; }
@@ -131,18 +131,41 @@
             transition: opacity 0.4s ease-in-out;
         }
         .fade-out { opacity: 0; }
+
+        /* Two words side by side */
+        .vocab-container {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .vocab-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
     </style>
 </head>
 <body>
 
-    <!-- VOCAB CARD -->
+    <!-- VOCAB CARD - NOW WITH TWO WORDS -->
     <div class="card vocab-card" id="vocab-card">
         <div class="drag-handle">⋮⋮ VOCAB ⋮⋮</div>
-        <div class="word" id="word"></div>
-        <div class="meaning" id="meaning"></div>
-        <div class="example" id="vocab-ex1"></div>
-        <div class="example" id="vocab-ex2"></div>
-        <button onclick="showRandomWord()">Nächstes Wort ➔</button>
+        <div class="vocab-container">
+            <div class="vocab-item">
+                <div class="word" id="word1"></div>
+                <div class="meaning" id="meaning1"></div>
+                <div class="example" id="vocab1-ex1"></div>
+                <div class="example" id="vocab1-ex2"></div>
+            </div>
+            <div class="vocab-item">
+                <div class="word" id="word2"></div>
+                <div class="meaning" id="meaning2"></div>
+                <div class="example" id="vocab2-ex1"></div>
+                <div class="example" id="vocab2-ex2"></div>
+            </div>
+        </div>
+        <button onclick="showRandomWords()">Nächste Wörter ➔</button>
     </div>
 
     <!-- GRAMMAR CARD -->
@@ -157,20 +180,20 @@
         <button onclick="showRandomGrammar()">Nächstes Thema ➔</button>
     </div>
 
-    <!-- NEWS CARD -->
+    <!-- NEWS CARD - LIVE RSS FEED -->
     <div class="card news-card" id="news-card">
-        <div class="drag-handle">⋮⋮ EILMELDUNG ⋮⋮</div>
+        <div class="drag-handle">⋮⋮ NACHRICHTEN ⋮⋮</div>
         <div class="date" id="news-date"></div>
         <div class="headline" id="headline"></div>
         <div class="example" id="news-summary"></div>
-        <button onclick="showRandomNews()">Nächste Meldung ➔</button>
+        <button onclick="showNextNews()">Nächste Meldung ➔</button>
     </div>
 
     <script src="vocab.js"></script>
     <script src="grammar.js"></script>
-    <script src="news.js"></script>
     
     <script>
+        // Make all cards draggable
         function makeDraggable(card) {
             let isDragging = false;
             let startX, startY, initialLeft, initialTop;
@@ -197,20 +220,37 @@
         makeDraggable(document.getElementById('grammar-card'));
         makeDraggable(document.getElementById('news-card'));
 
-        function showRandomWord() {
+        // VOCAB - Show 2 words at once
+        function showRandomWords() {
             const elements = document.querySelectorAll('.vocab-card .word, .vocab-card .meaning, .vocab-card .example');
             elements.forEach(el => el.classList.add('fade-out'));
 
             setTimeout(() => {
-                const item = vocab[Math.floor(Math.random() * vocab.length)];
-                document.getElementById('word').textContent = item.word;
-                document.getElementById('meaning').textContent = item.meaning;
-                document.getElementById('vocab-ex1').innerHTML = "💬 " + item.ex1;
-                document.getElementById('vocab-ex2').innerHTML = "💬 " + item.ex2;
+                // Pick 2 different random words
+                const index1 = Math.floor(Math.random() * vocab.length);
+                let index2 = Math.floor(Math.random() * vocab.length);
+                while (index2 === index1) {
+                    index2 = Math.floor(Math.random() * vocab.length);
+                }
+
+                const item1 = vocab[index1];
+                const item2 = vocab[index2];
+
+                document.getElementById('word1').textContent = item1.word;
+                document.getElementById('meaning1').textContent = item1.meaning;
+                document.getElementById('vocab1-ex1').innerHTML = "💬 " + item1.ex1;
+                document.getElementById('vocab1-ex2').innerHTML = "💬 " + item1.ex2;
+
+                document.getElementById('word2').textContent = item2.word;
+                document.getElementById('meaning2').textContent = item2.meaning;
+                document.getElementById('vocab2-ex1').innerHTML = "💬 " + item2.ex1;
+                document.getElementById('vocab2-ex2').innerHTML = "💬 " + item2.ex2;
+
                 elements.forEach(el => el.classList.remove('fade-out'));
             }, 400);
         }
 
+        // GRAMMAR
         function showRandomGrammar() {
             const elements = document.querySelectorAll('.grammar-card .topic, .grammar-card .pattern, .grammar-card .example, .grammar-card .note');
             elements.forEach(el => el.classList.add('fade-out'));
@@ -227,26 +267,62 @@
             }, 400);
         }
 
-        function showRandomNews() {
+        // NEWS - Fetch from Tagesschau RSS
+        let newsItems = [];
+        let currentNewsIndex = 0;
+
+        async function fetchNews() {
+            try {
+                // Using a CORS proxy to fetch RSS
+                const response = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent('https://www.tagesschau.de/xml/rss2/'));
+                const text = await response.text();
+                const parser = new DOMParser();
+                const xml = parser.parseFromString(text, 'text/xml');
+                const items = xml.querySelectorAll('item');
+
+                newsItems = Array.from(items).slice(0, 10).map(item => ({
+                    date: item.querySelector('pubDate')?.textContent || '',
+                    headline: item.querySelector('title')?.textContent || '',
+                    summary: item.querySelector('description')?.textContent || ''
+                }));
+
+                if (newsItems.length > 0) {
+                    showNextNews();
+                }
+            } catch (error) {
+                console.error('Error fetching news:', error);
+                // Fallback to static news if RSS fails
+                document.getElementById('headline').textContent = 'Nachrichten nicht verfügbar';
+                document.getElementById('news-summary').innerHTML = '📰 RSS-Feed konnte nicht geladen werden';
+            }
+        }
+
+        function showNextNews() {
+            if (newsItems.length === 0) return;
+
             const elements = document.querySelectorAll('.news-card .headline, .news-card .example, .news-card .date');
             elements.forEach(el => el.classList.add('fade-out'));
 
             setTimeout(() => {
-                const item = news[Math.floor(Math.random() * news.length)];
-                document.getElementById('news-date').textContent = item.date;
+                const item = newsItems[currentNewsIndex];
+                document.getElementById('news-date').textContent = new Date(item.date).toLocaleDateString('de-DE');
                 document.getElementById('headline').textContent = item.headline;
                 document.getElementById('news-summary').innerHTML = "📰 " + item.summary;
+                
+                currentNewsIndex = (currentNewsIndex + 1) % newsItems.length;
                 elements.forEach(el => el.classList.remove('fade-out'));
             }, 400);
         }
 
-        showRandomWord();
+        // Initialize
+        showRandomWords();
         showRandomGrammar();
-        showRandomNews();
+        fetchNews(); // Fetch live news
 
-        setInterval(showRandomWord, 120000);
-        setInterval(showRandomGrammar, 180000);
-        setInterval(showRandomNews, 240000); // 4 minutes for news
+        // Auto-change timers
+        setInterval(showRandomWords, 120000);      // Vocab: 2 minutes
+        setInterval(showRandomGrammar, 180000);   // Grammar: 3 minutes
+        setInterval(showNextNews, 240000);        // News: 4 minutes
     </script>
 </body>
 </html>
