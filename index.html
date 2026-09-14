@@ -23,7 +23,7 @@
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
             padding: 20px;
-            width: 320px; /* Much smaller! */
+            width: 320px;
             text-align: center;
             border-top: 4px solid #0078d4;
             cursor: grab;
@@ -63,11 +63,28 @@
             color: #333;
             line-height: 1.4;
             border-left: 3px solid #0078d4;
+            margin-bottom: 15px;
         }
 
         .highlight {
             color: #0078d4;
             font-weight: bold;
+        }
+
+        button {
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            font-size: 0.9em;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background-color: #005a9e;
         }
 
         .source, .word, .meaning, .example {
@@ -85,6 +102,7 @@
         <div class="word" id="word"></div>
         <div class="meaning" id="meaning"></div>
         <div class="example" id="ex1"></div>
+        <button onclick="showRandomWord()">Nächstes Wort ➔</button>
     </div>
 
     <script src="vocab.js"></script>
@@ -116,7 +134,7 @@
             isDragging = false;
         });
 
-        // Vocab logic - simplified
+        // Vocab logic
         function showRandomWord() {
             const elements = document.querySelectorAll('.word, .meaning, .example');
             elements.forEach(el => el.classList.add('fade-out'));
