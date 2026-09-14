@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deutsch Tile</title>
+    <title>Deutsch Dashboard</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -16,8 +16,6 @@
 
         .card {
             position: absolute;
-            top: 20px;
-            left: 20px;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-radius: 12px;
@@ -25,11 +23,22 @@
             padding: 18px;
             width: 340px;
             text-align: center;
-            border-top: 4px solid #0078d4;
             cursor: grab;
         }
 
         .card:active { cursor: grabbing; }
+
+        .vocab-card {
+            top: 20px;
+            left: 20px;
+            border-top: 4px solid #0078d4;
+        }
+
+        .grammar-card {
+            top: 20px;
+            left: 380px;
+            border-top: 4px solid #107c10;
+        }
 
         .drag-handle {
             text-align: center;
@@ -38,14 +47,14 @@
             margin-bottom: 8px;
         }
 
-        .word {
+        .word, .topic {
             font-size: 1.5em;
             font-weight: bold;
             color: #1a1a1a;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
-        .meaning {
+        .meaning, .pattern {
             font-size: 0.85em;
             color: #666;
             margin-bottom: 12px;
@@ -60,17 +69,26 @@
             font-size: 0.82em;
             color: #333;
             line-height: 1.4;
-            border-left: 3px solid #0078d4;
             margin-bottom: 8px;
         }
 
-        .highlight {
-            color: #0078d4;
-            font-weight: bold;
+        .vocab-card .example { border-left: 3px solid #0078d4; }
+        .grammar-card .example { border-left: 3px solid #107c10; }
+
+        .note {
+            background: #fff3cd;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.75em;
+            color: #856404;
+            margin-top: 10px;
+            text-align: left;
         }
 
+        .vocab-card .highlight { color: #0078d4; font-weight: bold; }
+        .grammar-card .highlight { color: #107c10; font-weight: bold; }
+
         button {
-            background-color: #0078d4;
             color: white;
             border: none;
             padding: 8px 20px;
@@ -78,12 +96,16 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            margin-top: 5px;
+            margin-top: 8px;
         }
 
-        button:hover { background-color: #005a9e; }
+        .vocab-card button { background-color: #0078d4; }
+        .vocab-card button:hover { background-color: #005a9e; }
 
-        .word, .meaning, .example {
+        .grammar-card button { background-color: #107c10; }
+        .grammar-card button:hover { background-color: #0b5a0b; }
+
+        .word, .meaning, .example, .topic, .pattern, .note {
             transition: opacity 0.4s ease-in-out;
         }
         .fade-out { opacity: 0; }
@@ -91,55 +113,97 @@
 </head>
 <body>
 
-    <div class="card" id="draggable-card">
-        <div class="drag-handle">⋮⋮</div>
+    <!-- VOCAB CARD -->
+    <div class="card vocab-card" id="vocab-card">
+        <div class="drag-handle">⋮⋮ VOCAB ⋮⋮</div>
         <div class="word" id="word"></div>
         <div class="meaning" id="meaning"></div>
-        <div class="example" id="ex1"></div>
-        <div class="example" id="ex2"></div>
+        <div class="example" id="vocab-ex1"></div>
+        <div class="example" id="vocab-ex2"></div>
         <button onclick="showRandomWord()">Nächstes Wort ➔</button>
     </div>
 
+    <!-- GRAMMAR CARD -->
+    <div class="card grammar-card" id="grammar-card">
+        <div class="drag-handle">⋮⋮ GRAMMAR ⋮⋮</div>
+        <div class="topic" id="topic"></div>
+        <div class="pattern" id="pattern"></div>
+        <div class="example" id="grammar-ex1"></div>
+        <div class="example" id="grammar-ex2"></div>
+        <div class="example" id="grammar-ex3"></div>
+        <div class="note" id="note"></div>
+        <button onclick="showRandomGrammar()">Nächstes Thema ➔</button>
+    </div>
+
     <script src="vocab.js"></script>
+    <script src="grammar.js"></script>
     
     <script>
-        const card = document.getElementById('draggable-card');
-        let isDragging = false;
-        let startX, startY, initialLeft, initialTop;
+        // Make both cards draggable
+        function makeDraggable(card) {
+            let isDragging = false;
+            let startX, startY, initialLeft, initialTop;
 
-        card.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            startX = e.clientX;
-            startY = e.clientY;
-            const rect = card.getBoundingClientRect();
-            initialLeft = rect.left;
-            initialTop = rect.top;
-        });
+            card.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                const rect = card.getBoundingClientRect();
+                initialLeft = rect.left;
+                initialTop = rect.top;
+            });
 
-        document.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            card.style.left = `${initialLeft + e.clientX - startX}px`;
-            card.style.top = `${initialTop + e.clientY - startY}px`;
-        });
+            document.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                card.style.left = `${initialLeft + e.clientX - startX}px`;
+                card.style.top = `${initialTop + e.clientY - startY}px`;
+            });
 
-        document.addEventListener('mouseup', () => { isDragging = false; });
+            document.addEventListener('mouseup', () => { isDragging = false; });
+        }
 
+        makeDraggable(document.getElementById('vocab-card'));
+        makeDraggable(document.getElementById('grammar-card'));
+
+        // Vocab logic
         function showRandomWord() {
-            const elements = document.querySelectorAll('.word, .meaning, .example');
+            const elements = document.querySelectorAll('.vocab-card .word, .vocab-card .meaning, .vocab-card .example');
             elements.forEach(el => el.classList.add('fade-out'));
 
             setTimeout(() => {
                 const item = vocab[Math.floor(Math.random() * vocab.length)];
                 document.getElementById('word').textContent = item.word;
                 document.getElementById('meaning').textContent = item.meaning;
-                document.getElementById('ex1').innerHTML = "💬 " + item.ex1;
-                document.getElementById('ex2').innerHTML = "💬 " + item.ex2;
+                document.getElementById('vocab-ex1').innerHTML = "💬 " + item.ex1;
+                document.getElementById('vocab-ex2').innerHTML = "💬 " + item.ex2;
                 elements.forEach(el => el.classList.remove('fade-out'));
             }, 400);
         }
 
+        // Grammar logic
+        function showRandomGrammar() {
+            const elements = document.querySelectorAll('.grammar-card .topic, .grammar-card .pattern, .grammar-card .example, .grammar-card .note');
+            elements.forEach(el => el.classList.add('fade-out'));
+
+            setTimeout(() => {
+                const item = grammar[Math.floor(Math.random() * grammar.length)];
+                document.getElementById('topic').textContent = item.topic;
+                document.getElementById('pattern').textContent = item.pattern;
+                document.getElementById('grammar-ex1').innerHTML = "💬 " + item.examples[0];
+                document.getElementById('grammar-ex2').innerHTML = "💬 " + item.examples[1];
+                document.getElementById('grammar-ex3').innerHTML = "💬 " + item.examples[2];
+                document.getElementById('note').innerHTML = "💡 " + item.note;
+                elements.forEach(el => el.classList.remove('fade-out'));
+            }, 400);
+        }
+
+        // Start both
         showRandomWord();
-        setInterval(showRandomWord, 120000);
+        showRandomGrammar();
+
+        // Auto-change timers
+        setInterval(showRandomWord, 120000);      // Vocab: 2 minutes
+        setInterval(showRandomGrammar, 180000);   // Grammar: 3 minutes
     </script>
 </body>
 </html>
