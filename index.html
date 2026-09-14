@@ -22,7 +22,7 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
             padding: 18px;
             width: 340px;
-            height: 480px; /* Same height for both */
+            height: 480px;
             text-align: center;
             cursor: grab;
             display: flex;
@@ -39,8 +39,14 @@
 
         .grammar-card {
             top: 20px;
-            left: 380px; /* 20 + 340 + 20px gap */
+            left: 380px;
             border-top: 4px solid #107c10;
+        }
+
+        .news-card {
+            top: 20px;
+            left: 740px;
+            border-top: 4px solid #d83b01;
         }
 
         .drag-handle {
@@ -51,11 +57,12 @@
             font-weight: 600;
         }
 
-        .word, .topic {
-            font-size: 1.5em;
+        .word, .topic, .headline {
+            font-size: 1.4em;
             font-weight: bold;
             color: #1a1a1a;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
+            line-height: 1.3;
         }
 
         .meaning, .pattern {
@@ -78,6 +85,7 @@
 
         .vocab-card .example { border-left: 3px solid #0078d4; }
         .grammar-card .example { border-left: 3px solid #107c10; }
+        .news-card .example { border-left: 3px solid #d83b01; }
 
         .note {
             background: #fff3cd;
@@ -85,12 +93,19 @@
             border-radius: 6px;
             font-size: 0.75em;
             color: #856404;
-            margin-top: auto; /* Pushes note to bottom */
+            margin-top: auto;
             text-align: left;
+        }
+
+        .date {
+            font-size: 0.75em;
+            color: #999;
+            margin-bottom: 10px;
         }
 
         .vocab-card .highlight { color: #0078d4; font-weight: bold; }
         .grammar-card .highlight { color: #107c10; font-weight: bold; }
+        .news-card .highlight { color: #d83b01; font-weight: bold; }
 
         button {
             color: white;
@@ -100,7 +115,7 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            margin-top: auto; /* Pushes button to bottom */
+            margin-top: auto;
         }
 
         .vocab-card button { background-color: #0078d4; }
@@ -109,7 +124,10 @@
         .grammar-card button { background-color: #107c10; }
         .grammar-card button:hover { background-color: #0b5a0b; }
 
-        .word, .meaning, .example, .topic, .pattern, .note {
+        .news-card button { background-color: #d83b01; }
+        .news-card button:hover { background-color: #a52d00; }
+
+        .word, .meaning, .example, .topic, .pattern, .note, .headline, .date {
             transition: opacity 0.4s ease-in-out;
         }
         .fade-out { opacity: 0; }
@@ -139,8 +157,18 @@
         <button onclick="showRandomGrammar()">Nächstes Thema ➔</button>
     </div>
 
+    <!-- NEWS CARD -->
+    <div class="card news-card" id="news-card">
+        <div class="drag-handle">⋮⋮ EILMELDUNG ⋮⋮</div>
+        <div class="date" id="news-date"></div>
+        <div class="headline" id="headline"></div>
+        <div class="example" id="news-summary"></div>
+        <button onclick="showRandomNews()">Nächste Meldung ➔</button>
+    </div>
+
     <script src="vocab.js"></script>
     <script src="grammar.js"></script>
+    <script src="news.js"></script>
     
     <script>
         function makeDraggable(card) {
@@ -167,6 +195,7 @@
 
         makeDraggable(document.getElementById('vocab-card'));
         makeDraggable(document.getElementById('grammar-card'));
+        makeDraggable(document.getElementById('news-card'));
 
         function showRandomWord() {
             const elements = document.querySelectorAll('.vocab-card .word, .vocab-card .meaning, .vocab-card .example');
@@ -198,11 +227,26 @@
             }, 400);
         }
 
+        function showRandomNews() {
+            const elements = document.querySelectorAll('.news-card .headline, .news-card .example, .news-card .date');
+            elements.forEach(el => el.classList.add('fade-out'));
+
+            setTimeout(() => {
+                const item = news[Math.floor(Math.random() * news.length)];
+                document.getElementById('news-date').textContent = item.date;
+                document.getElementById('headline').textContent = item.headline;
+                document.getElementById('news-summary').innerHTML = "📰 " + item.summary;
+                elements.forEach(el => el.classList.remove('fade-out'));
+            }, 400);
+        }
+
         showRandomWord();
         showRandomGrammar();
+        showRandomNews();
 
         setInterval(showRandomWord, 120000);
         setInterval(showRandomGrammar, 180000);
+        setInterval(showRandomNews, 240000); // 4 minutes for news
     </script>
 </body>
 </html>
