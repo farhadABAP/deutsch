@@ -3,134 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Office German Vocab Tile</title>
+    <title>Deutsch Tile</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
+        /* Transparent background so it floats on your desktop */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            background-color: transparent; 
             margin: 0;
-            overflow: hidden;
+            height: 100vh;
+            overflow: hidden; /* Prevents scrollbars when dragging */
+            user-select: none; /* Prevents highlighting text while dragging */
         }
+
         .card {
-            background: white;
+            position: absolute;
+            top: 20px;       /* Default: Top of screen */
+            left: 20px;      /* Default: Left of screen */
+            background: rgba(255, 255, 255, 0.95); /* Slight transparency */
+            backdrop-filter: blur(10px); /* Frosted glass effect (Windows 11 style) */
             border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-            padding: 30px 35px;
-            max-width: 580px;
-            width: 95%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            padding: 30px;
+            width: 550px;
             text-align: center;
             border-top: 6px solid #0078d4;
+            cursor: grab; /* Shows the "hand" cursor */
+            transition: box-shadow 0.2s, transform 0.1s;
         }
+
+        .card:active {
+            cursor: grabbing;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+        }
+
+        /* The little grip handle at the top to show it's moveable */
+        .drag-handle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+            color: #aaa;
+            font-size: 1.2em;
+            letter-spacing: 2px;
+        }
+
         .source {
             font-size: 0.8em;
-            color: #999;
-            margin-bottom: 12px;
-            font-weight: 500;
-            transition: opacity 0.6s ease-in-out;
+            color: #888;
+            margin-bottom: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
+
         .word {
-            font-size: 2.4em;
+            font-size: 2.2em;
             font-weight: bold;
             color: #1a1a1a;
             margin-bottom: 8px;
-            transition: opacity 0.6s ease-in-out;
         }
+
         .meaning {
             font-size: 1.1em;
             color: #555;
-            margin-bottom: 22px;
+            margin-bottom: 25px;
             font-style: italic;
-            transition: opacity 0.6s ease-in-out;
         }
+
         .examples {
             text-align: left;
             background-color: #f8f9fa;
-            padding: 18px;
+            padding: 20px;
             border-radius: 10px;
-            margin-bottom: 22px;
+            margin-bottom: 20px;
             border-left: 4px solid #0078d4;
         }
+
         .example {
             margin-bottom: 12px;
             font-size: 1em;
             color: #333;
             line-height: 1.5;
-            transition: opacity 0.6s ease-in-out;
         }
-        .example:last-child {
-            margin-bottom: 0;
-        }
+
+        .example:last-child { margin-bottom: 0; }
+
         .highlight {
             color: #0078d4;
             font-weight: bold;
         }
+
+        /* Smooth fade effect for auto-changing */
+        .source, .word, .meaning, .example {
+            transition: opacity 0.5s ease-in-out;
+        }
         .fade-out {
             opacity: 0;
-        }
-        button {
-            background-color: #0078d4;
-            color: white;
-            border: none;
-            padding: 12px 32px;
-            font-size: 1em;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-            font-weight: 600;
-        }
-        button:hover {
-            background-color: #005a9e;
-        }
-        button:active {
-            transform: scale(0.98);
-        }
-        .counter {
-            font-size: 0.75em;
-            color: #bbb;
-            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="card">
+
+    <div class="card" id="draggable-card">
+        <div class="drag-handle">⋮⋮</div> <!-- Grip handle -->
         <div class="source" id="source"></div>
         <div class="word" id="word"></div>
         <div class="meaning" id="meaning"></div>
         <div class="examples">
             <div class="example" id="ex1"></div>
-            <div class="example" id="ex2"></div>
+            <div class="example" id="ex2"></div
         </div>
-        <button onclick="showRandomWord()">Nächstes Wort ➔</button>
-        <div class="counter" id="counter"></div>
     </div>
 
+    <!-- Links to your external data file -->
     <script src="vocab.js"></script>
-
+    
     <script>
-        let lastIndex = -1;
+        // --- 1. DRAGGABLE WIDGET LOGIC ---
+        const card = document.getElementById('draggable-card');
+        let isDragging = false;
+        let startX, startY, initialLeft, initialTop;
 
+        card.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            const rect = card.getBoundingClientRect();
+            initialLeft = rect.left;
+            initialTop = rect.top;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            card.style.left = `${initialLeft + dx}px`;
+            card.style.top = `${initialTop + dy}px`;
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // --- 2. VOCAB LOGIC ---
         function showRandomWord() {
             const elements = document.querySelectorAll('.source, .word, .meaning, .example');
-
+            
             // Fade out
             elements.forEach(el => el.classList.add('fade-out'));
 
-            // After fade-out finishes, change content and fade in
             setTimeout(() => {
-                // Pick a random index, but avoid repeating the same word twice in a row
-                let randomIndex;
-                do {
-                    randomIndex = Math.floor(Math.random() * vocab.length);
-                } while (randomIndex === lastIndex && vocab.length > 1);
-                lastIndex = randomIndex;
-
+                const randomIndex = Math.floor(Math.random() * vocab.length);
                 const item = vocab[randomIndex];
 
                 document.getElementById('source').textContent = "📖 " + item.source;
@@ -138,17 +160,14 @@
                 document.getElementById('meaning').textContent = item.meaning;
                 document.getElementById('ex1').innerHTML = "💬 " + item.ex1;
                 document.getElementById('ex2').innerHTML = "💬 " + item.ex2;
-                document.getElementById('counter').textContent = (randomIndex + 1) + " / " + vocab.length;
 
                 // Fade in
                 elements.forEach(el => el.classList.remove('fade-out'));
-            }, 600);
+            }, 500); 
         }
 
-        // Show first word immediately
+        // Start immediately and set 2-minute interval
         showRandomWord();
-
-        // Auto-change every 2 minutes (120000 ms)
         setInterval(showRandomWord, 120000);
     </script>
 </body>
