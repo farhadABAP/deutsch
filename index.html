@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Office German Vocab Tile</title>
-    <style>
+       <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f0f2f5;
@@ -22,8 +22,18 @@
             max-width: 550px;
             width: 90%;
             text-align: center;
-            border-top: 6px solid #0078d4; /* Windows 11 Blue */
+            border-top: 6px solid #0078d4; 
         }
+        
+        /* --- NEW: Smooth fade effect for auto-changing --- */
+        .source, .word, .meaning, .example {
+            transition: opacity 0.6s ease-in-out;
+        }
+        .fade-out {
+            opacity: 0;
+        }
+        /* ------------------------------------------------- */
+
         .source {
             font-size: 0.85em;
             color: #888;
@@ -88,23 +98,35 @@
         <button onclick="showRandomWord()">Nächstes Wort ➔</button>
     </div>
 
-    <!-- This links to your external data file -->
-    <script src="vocab.js"></script>
-    
-    <script>
+       <script>
         function showRandomWord() {
-            const randomIndex = Math.floor(Math.random() * vocab.length);
-            const item = vocab[randomIndex];
-            
-            document.getElementById('source').textContent = "📖 " + item.source;
-            document.getElementById('word').textContent = item.word;
-            document.getElementById('meaning').textContent = item.meaning;
-            document.getElementById('ex1').innerHTML = "💬 " + item.ex1;
-            document.getElementById('ex2').innerHTML = "💬 " + item.ex2;
+            // Select all text elements we want to fade
+            const elements = document.querySelectorAll('.source, .word, .meaning, .example');
+
+            // 1. Fade out the current text
+            elements.forEach(el => el.classList.add('fade-out'));
+
+            // 2. Wait for the fade-out to finish (0.6 seconds), then change the text
+            setTimeout(() => {
+                const randomIndex = Math.floor(Math.random() * vocab.length);
+                const item = vocab[randomIndex];
+
+                document.getElementById('source').textContent = "📖 " + item.source;
+                document.getElementById('word').textContent = item.word;
+                document.getElementById('meaning').textContent = item.meaning;
+                document.getElementById('ex1').innerHTML = "💬 " + item.ex1;
+                document.getElementById('ex2').innerHTML = "💬 " + item.ex2;
+
+                // 3. Fade the new text back in
+                elements.forEach(el => el.classList.remove('fade-out'));
+            }, 600); 
         }
 
-        // Show a word immediately when the file is opened
+        // Show the first word immediately when you open the file
         showRandomWord();
+
+        // Automatically change the word every 2 minutes (120,000 milliseconds)
+        setInterval(showRandomWord, 120000);
     </script>
 </body>
 </html>
