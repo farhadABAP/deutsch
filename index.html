@@ -353,7 +353,7 @@
         async function fetchWeather() {
             try {
                 // Ändere 'Berlin' zu deiner Stadt, z.B. 'München' oder 'Hamburg'
-                const res = await fetch('https://wttr.in/Berlin?format=j1&lang=de');
+                const res = await fetch('https://wttr.in/Dresden?format=j1&lang=de');
                 const data = await res.json();
                 
                 for (let i = 0; i < 3; i++) {
