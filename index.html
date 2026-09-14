@@ -22,48 +22,46 @@
             backdrop-filter: blur(10px);
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            padding: 20px;
-            width: 320px;
+            padding: 18px;
+            width: 340px;
             text-align: center;
             border-top: 4px solid #0078d4;
             cursor: grab;
         }
 
-        .card:active {
-            cursor: grabbing;
-        }
+        .card:active { cursor: grabbing; }
 
         .drag-handle {
             text-align: center;
             color: #ccc;
             font-size: 1em;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .word {
-            font-size: 1.6em;
+            font-size: 1.5em;
             font-weight: bold;
             color: #1a1a1a;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .meaning {
-            font-size: 0.9em;
+            font-size: 0.85em;
             color: #666;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             font-style: italic;
         }
 
         .example {
             text-align: left;
             background: #f8f9fa;
-            padding: 12px;
+            padding: 10px;
             border-radius: 8px;
-            font-size: 0.85em;
+            font-size: 0.82em;
             color: #333;
             line-height: 1.4;
             border-left: 3px solid #0078d4;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
         }
 
         .highlight {
@@ -75,24 +73,20 @@
             background-color: #0078d4;
             color: white;
             border: none;
-            padding: 10px 24px;
-            font-size: 0.9em;
+            padding: 8px 20px;
+            font-size: 0.85em;
             border-radius: 6px;
             cursor: pointer;
-            transition: background 0.2s;
             font-weight: 600;
+            margin-top: 5px;
         }
 
-        button:hover {
-            background-color: #005a9e;
-        }
+        button:hover { background-color: #005a9e; }
 
-        .source, .word, .meaning, .example {
+        .word, .meaning, .example {
             transition: opacity 0.4s ease-in-out;
         }
-        .fade-out {
-            opacity: 0;
-        }
+        .fade-out { opacity: 0; }
     </style>
 </head>
 <body>
@@ -102,13 +96,13 @@
         <div class="word" id="word"></div>
         <div class="meaning" id="meaning"></div>
         <div class="example" id="ex1"></div>
+        <div class="example" id="ex2"></div>
         <button onclick="showRandomWord()">Nächstes Wort ➔</button>
     </div>
 
     <script src="vocab.js"></script>
     
     <script>
-        // Drag logic
         const card = document.getElementById('draggable-card');
         let isDragging = false;
         let startX, startY, initialLeft, initialTop;
@@ -124,29 +118,22 @@
 
         document.addEventListener('mousemove', (e) => {
             if (!isDragging) return;
-            const dx = e.clientX - startX;
-            const dy = e.clientY - startY;
-            card.style.left = `${initialLeft + dx}px`;
-            card.style.top = `${initialTop + dy}px`;
+            card.style.left = `${initialLeft + e.clientX - startX}px`;
+            card.style.top = `${initialTop + e.clientY - startY}px`;
         });
 
-        document.addEventListener('mouseup', () => {
-            isDragging = false;
-        });
+        document.addEventListener('mouseup', () => { isDragging = false; });
 
-        // Vocab logic
         function showRandomWord() {
             const elements = document.querySelectorAll('.word, .meaning, .example');
             elements.forEach(el => el.classList.add('fade-out'));
 
             setTimeout(() => {
-                const randomIndex = Math.floor(Math.random() * vocab.length);
-                const item = vocab[randomIndex];
-
+                const item = vocab[Math.floor(Math.random() * vocab.length)];
                 document.getElementById('word').textContent = item.word;
                 document.getElementById('meaning').textContent = item.meaning;
                 document.getElementById('ex1').innerHTML = "💬 " + item.ex1;
-
+                document.getElementById('ex2').innerHTML = "💬 " + item.ex2;
                 elements.forEach(el => el.classList.remove('fade-out'));
             }, 400);
         }
